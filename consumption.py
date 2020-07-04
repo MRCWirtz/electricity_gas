@@ -18,6 +18,16 @@ ax1.xaxis.set_minor_locator(dates.MonthLocator())
 ax1.xaxis.set_major_locator(dates.YearLocator())
 ax1.xaxis.set_major_formatter(dates.DateFormatter('%Y'))
 
+
+def clean_course(x):
+    """ function to clean counter resets """
+    jump_idx = np.where(np.diff(x) < 0)[0]
+    for i, idx in enumerate(jump_idx):
+        x[(idx+1):] += x[idx]
+    return x
+
+
+electricity = clean_course(electricity)
 ax1.plot_date(datestr, electricity-electricity[0], xdate=True, color='C0', ls='solid', label='electricity')
 ax1.plot_date(datestr, (gas-gas[0])*brennwert*zustandszahl, xdate=True, color='C1', ls='solid', label='gas')
 ax1.legend(loc=0)
@@ -26,6 +36,7 @@ ax1.set_ylabel('energy [kWh]', color='k')
 ax1.grid(True)
 
 ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+gas = clean_course(gas)
 ax2.plot_date(datestr, gas-gas[0], xdate=True, color='C1')
 ax2.set_ylabel(r'gas volume [m$^3$]', color='k')
 
